@@ -2,12 +2,15 @@ const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
-// const path = require("path");
+const path = require("path");
 const fs = require("fs");
 
-// const OUTPUT_DIR = path.resolve(__dirname, "output")
-// const outputPath = path.join(OUTPUT_DIR, "team.html");
+const OUTPUT_DIR = path.resolve(__dirname, "output")
+const outputPath = path.join(OUTPUT_DIR, "team.html");
+const render = require("./src/generateHTML.js");
 
+const teamArray = [];
+const idArray = [];
 
 function addEmployee(){
     function addManager(){
@@ -67,10 +70,39 @@ function addEmployee(){
 
         ])
         .then(managerData=>{
-            const manager = new Manager(managerData.managerName, managerData.managerID, managerData.managerEmail, managerData.workNumber)
+            const manager = new Manager(managerData.managerName, managerData.managerID, managerData.managerEmail, managerData.workNumber);
             console.log(manager);
+            teamArray.push(manager);
+            idArray.push(manager.managerID);
+            addTeam();
         })
     }
+        function addTeam(){
+            inquirer.prompt([
+                {
+                  type: "list",
+                  name: "memberChoice",
+                  message: "Which type of team member would you like to add?",
+                  choices: [
+                    "Engineer",
+                    "Intern",
+                    "I don't want to add any more team members"
+                  ]
+                }
+              ]).then(userChoice => {
+                switch (userChoice.memberChoice) {
+                  case "Engineer":
+                    addEngineer();
+                    break;
+                  case "Intern":
+                    addIntern();
+                    break;
+                  default:
+                    buildTeam();
+                }
+              });
+            }
+
     function addEngineer(){
         console.log("Answer the following questions:");
         return inquirer.prompt([
@@ -128,12 +160,83 @@ function addEmployee(){
 
         ])
         .then(engineerData=>{
-            const engineer = new Engineer(engineerData.engineerName, engineerData.engineerID, engineerData.engineerEmail, engineerData.github)
+            const engineer = new Engineer(engineerData.engineerName, engineerData.engineerID, engineerData.engineerEmail, engineerData.github);
             console.log(engineer);
+            teamArray.push(engineer);
+            idArray.push(engineer.engineerID);
+            addTeam();
         })
     }
+    function addIntern(){
+        console.log("Answer the following questions:");
+        return inquirer.prompt([
+            {
+                type: 'input',
+                name: 'internName',
+                message: "Input the name of the intern:",
+                validate: input => {
+                    if(input){
+                        return true;
+                    }else{
+                        return "Please provide a name for the intern";
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'internID',
+                message: "Input the intern's ID:",
+                validate: input => {
+                    if(isNaN(input) || (!input)){
+                        return "Please provide the intern's ID";
+                    }else{
+                        return true;
+                    }
+                }
+            },
+            {
+                type: "input",
+                name: "internEmail",
+                message: "Input the intern's email:",
+                validate: input => {
+                  const isTrue = input.match(
+                    /\S+@\S+\.\S+/
+                  );
+                  if (isTrue) {
+                    return true;
+                  }
+                  return "Please provide the intern's email";
+                }
+              },
+              {
+                type: "input",
+                name: "school",
+                message: "Input the engineer's school",
+                validate: input => {
+                    if(input){
+                        return true;
+                    }else{
+                        return "Please provide a school for the engineer";
+                    }
+                }
+              },
+        ])
+        .then(internData=>{
+            const intern = new Intern(internData.internName, internData.internID, internData.internEmail, internData.school);
+            console.log(intern);
+            teamArray.push(intern);
+            idArray.push(intern.internID);
+            addTeam();
+        })
+    }
+    function buildTeam() {
+        // Create the output directory if the output path doesn't exist
+        if (!fs.existsSync(OUTPUT_DIR)) {
+          fs.mkdirSync(OUTPUT_DIR)
+        }
+        fs.writeFileSync(outputPath, render(teamArray), "utf-8");
+      }
     addManager();
-    addEngineer();
 }
 
 addEmployee();
