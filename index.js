@@ -5,7 +5,7 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
-const outputDirectory = path.resolve(__dirname, "output")
+const outputDirectory = path.resolve(__dirname, "dist")
 const outputFile = path.join(outputDirectory, "team.html");
 const generateHTML = require("./src/generateHTML.js");
 
