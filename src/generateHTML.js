@@ -10,7 +10,7 @@ const setManager = function(manager) {
             <ul class="list-group">
                 <li class="list-group-item">ID: ${manager.getId()}</li>
                 <li class="list-group-item">Email: <a href="mailto:${manager.getEmail()}">${manager.getEmail()}</a></li>
-                <li class="list-group-item">Office number: ${manager.workNumber}</li>
+                <li class="list-group-item">Office number: ${manager.officeNumber}</li>
             </ul>
         </div>
     </div>

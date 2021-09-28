@@ -12,9 +12,10 @@ const generateHTML = require("./src/generateHTML.js");
 const teamArray = [];
 const idArray = [];
 
-function addEmployee(){
+function addTeam(){
+    // inquirer starts here
     function addManager(){
-        console.log("Answer the following questions:");
+        console.log("Answer the following questions for manager:");
         return inquirer.prompt([
             {
                 type: 'input',
@@ -56,11 +57,11 @@ function addEmployee(){
               },
               {
                 type: "input",
-                name: "workNumber",
-                message: "Input the manager's work number",
+                name: "officeNumber",
+                message: "Input the manager's office number",
                 validate: input => {
                     if(isNaN(input) || (!input)){
-                        return "Please provide the manager's work number";
+                        return "Please provide the manager's office number";
                     }else{
                         return true;
                     }
@@ -70,14 +71,16 @@ function addEmployee(){
 
         ])
         .then(managerData=>{
-            const manager = new Manager(managerData.managerName, managerData.managerID, managerData.managerEmail, managerData.workNumber);
-            console.log(manager);
+            // pass prompt object to manager constructor
+            const manager = new Manager(managerData.managerName, managerData.managerID, managerData.managerEmail, managerData.officeNumber);
             teamArray.push(manager);
             idArray.push(manager.managerID);
-            addTeam();
+            // prompt to add another employee
+            addEmployee();
         })
     }
-        function addTeam(){
+    // prompts to add another employee or submit team build
+        function addEmployee(){
             inquirer.prompt([
                 {
                   type: "list",
@@ -92,12 +95,15 @@ function addEmployee(){
               ]).then(userChoice => {
                 switch (userChoice.memberChoice) {
                   case "Engineer":
+                    // begins prompts for an engineer team member
                     addEngineer();
                     break;
                   case "Intern":
+                    //   begins prompts for an intern team member
                     addIntern();
                     break;
                   default:
+                    //   outputs the team array to an html 
                     buildTeam();
                 }
               });
@@ -147,7 +153,7 @@ function addEmployee(){
               {
                 type: "input",
                 name: "github",
-                message: "Input the engineer's gitHub",
+                message: "Input the engineer's gitHub username:",
                 validate: input => {
                     if(input){
                         return true;
@@ -161,10 +167,9 @@ function addEmployee(){
         ])
         .then(engineerData=>{
             const engineer = new Engineer(engineerData.engineerName, engineerData.engineerID, engineerData.engineerEmail, engineerData.github);
-            console.log(engineer);
             teamArray.push(engineer);
             idArray.push(engineer.engineerID);
-            addTeam();
+            addEmployee();
         })
     }
     function addIntern(){
@@ -223,10 +228,9 @@ function addEmployee(){
         ])
         .then(internData=>{
             const intern = new Intern(internData.internName, internData.internID, internData.internEmail, internData.school);
-            console.log(intern);
             teamArray.push(intern);
             idArray.push(intern.internID);
-            addTeam();
+            addEmployee();
         })
     }
     function buildTeam() {
@@ -235,8 +239,10 @@ function addEmployee(){
         }
         fs.writeFileSync(outputFile, generateHTML(teamArray), "utf-8");
       }
+// starts manager prompts
     addManager();
 }
+// Begin inquirer prompts
+addTeam();
 
-addEmployee();
 
