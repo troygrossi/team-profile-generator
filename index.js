@@ -5,9 +5,9 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
-const OUTPUT_DIR = path.resolve(__dirname, "output")
-const outputPath = path.join(OUTPUT_DIR, "team.html");
-const render = require("./src/generateHTML.js");
+const outputDirectory = path.resolve(__dirname, "output")
+const outputFile = path.join(outputDirectory, "team.html");
+const generateHTML = require("./src/generateHTML.js");
 
 const teamArray = [];
 const idArray = [];
@@ -230,29 +230,13 @@ function addEmployee(){
         })
     }
     function buildTeam() {
-        // Create the output directory if the output path doesn't exist
-        if (!fs.existsSync(OUTPUT_DIR)) {
-          fs.mkdirSync(OUTPUT_DIR)
+        if (!fs.existsSync(outputDirectory)) {
+          fs.mkdirSync(outputDirectory)
         }
-        fs.writeFileSync(outputPath, render(teamArray), "utf-8");
+        fs.writeFileSync(outputFile, generateHTML(teamArray), "utf-8");
       }
     addManager();
 }
 
 addEmployee();
 
-
-
-// promptQuestions(questions)
-//   .then(getBadges)
-//   .then((data) => {
-//     fs.writeFile(
-//       "./generated-README/README.md",
-//       generateMarkdown(data),
-//       (err) => {
-//         if (err) {
-//           throw new Error(err);
-//         }
-//       }
-//     );
-//   });
